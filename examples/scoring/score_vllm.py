@@ -3,10 +3,11 @@ import json
 from tqdm import tqdm
 import torch
 
+dataset = "sharegpt_wizardlm"
 
 model_name_or_path = "hkust-nlp/deita-quality-scorer"
-data_path = "/mnt/data/data-selection/data/processed/sharegpt/sharegpt_data.jsonl"
-output_path = "/mnt/data/data-selection/data/processed/sharegpt"
+data_path = f"/mnt/data/data-selection/data/processed/{dataset}/{dataset}_data.jsonl"
+output_path = f"/mnt/data/data-selection/data/processed/{dataset}/"
 scorer = Llama_Scorer(model_name_or_path, is_vllm = True)
 BATCH_SIZE = 64
 
@@ -21,6 +22,8 @@ with open(data_path) as f:
 for i in tqdm(range(0, len(lines), BATCH_SIZE)):
     batches = lines[i:i+BATCH_SIZE]
     messages = [json.loads(line)["messages"] for line in batches]
+    messages = [{k: v for k, v in message.items() if k != "system"} for message in messages]
+    
     len_conversation = [len(message) // 2 for message in messages]
     index = [i for i, count in enumerate(len_conversation) for _ in range(count)]
     local_index = [i for _, count in enumerate(len_conversation) for i in range(count)]

@@ -113,10 +113,22 @@ class Scorer(object):
         complexity_template = self.complexity_template
         quality_list = []
         complexity_list = []
+        tokenizer = self.llm.get_tokenizer()
         for input_text, resp_text in zip(input_text_list, resp_text_list):
             user_input = quality_template.format(instruction=input_text, output=resp_text)
+            if len(tokenizer.tokenize(user_input)) > 2048:
+                print("Warning: input text is too long. Truncating to 2048 tokens.")
+                diff = len(tokenizer.tokenize(user_input)) - 2048
+                resp_text = " ".join(resp_text.split()[:-diff])
+                user_input = quality_template.format(instruction=input_text, output=resp_text)
             quality_list.append(user_input)
+            
             user_input = complexity_template.format(instruction=input_text)
+            if len(tokenizer.tokenize(user_input)) > 2048:
+                print("Warning: input text is too long. Truncating to 2048 tokens.")
+                diff = len(tokenizer.tokenize(user_input)) - 2048
+                input_text = " ".join(input_text.split()[:-diff])
+                user_input = complexity_template.format(instruction=input_text)
             complexity_list.append(user_input)
 
         quality_scores = self.infer_batch_score(quality_list)
