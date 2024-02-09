@@ -8,7 +8,7 @@ dataset = "cohere"
 model_name_or_path = "weqweasdas/hh_rlhf_rm_open_llama_3b"
 data_path = f"data-selection/data/processed/{dataset}/{dataset}_data.jsonl"
 output_path = f"data-selection/data/processed/{dataset}/"
-BATCH_SIZE = 4
+BATCH_SIZE = 16
 
 scorer = RewardScorer(model_name_or_path, batch_size = BATCH_SIZE)
 

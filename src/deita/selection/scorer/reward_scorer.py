@@ -16,7 +16,7 @@ class RewardScorer:
             "sentiment-analysis",
             model=model_name_or_path,
             tokenizer=model_name_or_path,
-            device="cuda",
+            device_map="auto",
             model_kwargs={"torch_dtype": torch.bfloat16},
         )
 
